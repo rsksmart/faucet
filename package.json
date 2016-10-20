@@ -1,0 +1,20 @@
+{
+  "name": "rsk-faucet",
+  "private": true,
+  "version": "1.0.0",
+  "description": "rsk-faucet",
+  "main": "rsk-faucet.js",
+  "scripts": {
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "latest",
+    "body-parser": "latest",
+    "web3": "^0.15.3",
+    "request": "latest"
+  },
+  "devDependencies": {
+    "simpleunit": "0.0.7"
+  }
+}
