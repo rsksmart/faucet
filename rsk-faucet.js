@@ -45,6 +45,11 @@ function executeTransfer(destinationAddress) {
     console.log('transaction hash', result);
 }
 
+app.get('/balance', function (req, res) {
+  var balance = web3.eth.getBalance(faucetAddress);
+  return res.status(200).send(balance);  
+});
+
 
 app.post('/', function (req, res) {
   if (!validateRskAddress(req.body.rskAddress)) {
