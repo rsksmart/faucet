@@ -1,0 +1,10 @@
+{
+	"port": "PortToListen",
+	"rskNode": "rskNodeAddress",
+	"faucetAddress": "rskAddressForFaucet",
+	"faucetPrivateKey": "rskAddressForFaucetPrivateKey",
+	"reCaptchaSecret": "reCaptchaSecret",
+	"valueToSend": "valueToSend",
+	"gas": "gas",
+	"gasPrice": "gasPrice"
+}
