@@ -9,6 +9,11 @@ app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
 app.use('/lib', express.static('lib'));
 app.use(express.static('public'));
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -120,13 +125,12 @@ app.post('/', function (req, res) {
       console.log('Invalid captcha ', req.body.gRecaptchaResponse);
       return res.status(400).send("Failed captcha verification.");
     }
+    console.log('Sending RSKs to ' + req.body.rskAddress);
+    console.log('Recaptcha ' + req.body.gRecaptchaResponse);
+    executeTransfer(req.body.rskAddress)
+
+    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
   });
-
-  console.log('Sending RSKs to ' + req.body.rskAddress);
-  console.log('Recaptcha ' + req.body.gRecaptchaResponse);
-  executeTransfer(req.body.rskAddress)
-
-  res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
 });
 
 app.listen(port, function () {
