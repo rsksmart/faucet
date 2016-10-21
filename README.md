@@ -7,9 +7,7 @@ How to build and run locally
 
 
 Configuration for deployment to prod/testnet
-- There is a reCaptcha site created for monitoring@rsk.co / domain rsk.co
-- rskFaucet.js configuration variables on top of file
-- rsk-helper.js: configure urlOfFaucetServer
+- Copy example-config.json to config.json and configure with your data.- rsk-Faucet.js configuration variables on top of file
 - index.html: Configure recaptcha site key: <div class="g-recaptcha" data-sitekey="reCaptchaSiteKey"></div>
 - put some SBTCs on the faucet address
 
@@ -17,4 +15,3 @@ Configuration for deployment to prod/testnet
 TODO
 - Error msg show in red
 - Success msg: include amount and address
-- Make configuration more elegant (ie configuration file, env variables, etc)
