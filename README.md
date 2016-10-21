@@ -8,6 +8,7 @@ How to build and run locally
 
 Configuration for deployment to prod/testnet
 - Copy example-config.json to config.json and configure with your data.- rsk-Faucet.js configuration variables on top of file
+- lib/rsk-helper.js configure urlOfFaucetServer
 - index.html: Configure recaptcha site key: <div class="g-recaptcha" data-sitekey="reCaptchaSiteKey"></div>
 - put some SBTCs on the faucet address
 
