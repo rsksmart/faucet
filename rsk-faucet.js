@@ -51,7 +51,7 @@ loadPk();
 
 
 function executeTransfer(destinationAddress) {
-  var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress, gasPrice: gasPrice, gas: gas, value: valueToSend});
+  var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress.toLowerCase(), gasPrice: gasPrice, gas: gas, value: valueToSend});
   console.log('transaction hash', result);
 }
 
