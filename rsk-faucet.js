@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-var port = 3000;
+var port;
 var rskNode;
 var faucetAddress;
 var reCaptchaSecret;
@@ -115,7 +115,8 @@ function loadPk() {
 }
 
 function accountAlreadyUsed(account) {
-    return account in faucetHistory;
+    var acc = account.toLowerCase(); 
+    return acc in faucetHistory;
 }
 
 app.get('/balance', function (req, res) {
