@@ -4,6 +4,7 @@ var request = require('request');
 var app = express();
 var fs = require('fs');
 var Web3 = require('web3');
+var CronJob = require('cron').CronJob;
 
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
@@ -20,7 +21,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-var port;
+var port = 3000;
 var rskNode;
 var faucetAddress;
 var reCaptchaSecret;
@@ -28,10 +29,25 @@ var valueToSend;
 var gasPrice;
 var gas;
 var faucetPrivateKey;
+var faucetHistory = {};
 
 eval(fs.readFileSync('lib/validate-rsk-address.js')+'');
 
 readConfig();
+
+var job = new CronJob({
+  cronTime: '* */59 * * * *',
+  onTick: function() {
+    for (var storeAddress in faucetHistory) {
+      var now = new Date().getTime();
+      //86400000 = 1 day
+      if(now - faucetHistory[storeAddress].timestamp >= 86400000) {
+        delete faucetHistory[storeAddress];   
+      }
+    }
+  }, start: false, timeZone: 'America/Los_Angeles'});
+job.start();
+
 
 function getWeb3() {
   if (web3)
@@ -98,17 +114,27 @@ function loadPk() {
   console.log('PKs loaded to the node');
 }
 
+function accountAlreadyUsed(account) {
+    return account in faucetHistory;
+}
+
 app.get('/balance', function (req, res) {
   var balance = web3.eth.getBalance(faucetAddress);
   return res.status(200).send(balance);  
 });
-
 
 app.post('/', function (req, res) {
   if (!validateRskAddress(req.body.rskAddress)) {
     console.log('Invalid RSK address format ', req.body.rskAddress);
     return res.status(400).send('Invalid RSK address format.');
   }
+
+  if (accountAlreadyUsed(req.body.rskAddress)) {
+    console.log('Address already used today:', req.body.rskAddress);
+    return res.status(400).send('Address already used today.');
+  }
+
+
   // gRecaptchaResponse is the key that browser will generate upon form submit.
   // if its blank or null means user has not selected the captcha, so return the error.
   if(req.body.gRecaptchaResponse === undefined || req.body.gRecaptchaResponse === '' || req.body.gRecaptchaResponse === null) {
@@ -129,6 +155,7 @@ app.post('/', function (req, res) {
     console.log('Recaptcha ' + req.body.gRecaptchaResponse);
     executeTransfer(req.body.rskAddress)
 
+    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
     res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
   });
 });

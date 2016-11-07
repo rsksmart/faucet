@@ -12,7 +12,8 @@
     "express": "latest",
     "body-parser": "latest",
     "web3": "^0.15.3",
-    "request": "latest"
+    "request": "latest",
+    "cron": "latest"
   },
   "devDependencies": {
     "simpleunit": "0.0.7"
