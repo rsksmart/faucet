@@ -109,7 +109,7 @@ function extendWeb3() {
 function loadPk() {
   console.log('Loding PK to node');
   var result = web3.personal.importRawKey(faucetPrivateKey, "passPhraseToEncryptPrivKey");
-  var result = web3.personal.unlockAccount(faucetAddress, "passPhraseToEncryptPrivKey", "0x5");
+  var result = web3.personal.unlockAccount(faucetAddress, "passPhraseToEncryptPrivKey", "0xE10");
   console.log('PKs loaded to the node');
 }
 
