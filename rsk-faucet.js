@@ -63,10 +63,9 @@ var web3;
 getWeb3();
 
 extendWeb3();
-loadPk();
-
 
 function executeTransfer(destinationAddress) {
+  loadPk();
   var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress.toLowerCase(), gasPrice: gasPrice, gas: gas, value: valueToSend});
   console.log('transaction hash', result);
 }
@@ -110,7 +109,7 @@ function extendWeb3() {
 function loadPk() {
   console.log('Loding PK to node');
   var result = web3.personal.importRawKey(faucetPrivateKey, "passPhraseToEncryptPrivKey");
-  var result = web3.personal.unlockAccount(faucetAddress, "passPhraseToEncryptPrivKey", "0");
+  var result = web3.personal.unlockAccount(faucetAddress, "passPhraseToEncryptPrivKey", "0x5");
   console.log('PKs loaded to the node');
 }
 
