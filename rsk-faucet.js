@@ -65,6 +65,7 @@ getWeb3();
 extendWeb3();
 
 function executeTransfer(destinationAddress) {
+  
   loadPk();
   var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress.toLowerCase(), gasPrice: gasPrice, gas: gas, value: valueToSend});
   console.log('transaction hash', result);
@@ -145,18 +146,23 @@ app.post('/', function (req, res) {
   var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + reCaptchaSecret + "&response=" + req.body.gRecaptchaResponse + "&remoteip=" + req.connection.remoteAddress;
   // Hitting GET request to the URL, Google will respond with success or error scenario.
   request(verificationUrl,function(error,response,body) {
-    body = JSON.parse(body);
-    // Success will be true or false depending upon captcha validation.
-    if(body.success !== undefined && !body.success) {
-      console.log('Invalid captcha ', req.body.gRecaptchaResponse);
-      return res.status(400).send("Failed captcha verification.");
-    }
-    console.log('Sending RSKs to ' + req.body.rskAddress);
-    console.log('Recaptcha ' + req.body.gRecaptchaResponse);
-    executeTransfer(req.body.rskAddress)
+  	var isSyncing = web3.eth.syncing;
+  	if(!isSyncing) {
+  		body = JSON.parse(body);
+	    // Success will be true or false depending upon captcha validation.
+	    if(body.success !== undefined && !body.success) {
+	      console.log('Invalid captcha ', req.body.gRecaptchaResponse);
+	      return res.status(400).send("Failed captcha verification.");
+	    }
+	    console.log('Sending RSKs to ' + req.body.rskAddress);
+	    console.log('Recaptcha ' + req.body.gRecaptchaResponse);
+	    executeTransfer(req.body.rskAddress)
 
-    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
-    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
+	    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
+	    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
+  	} else {
+  		res.send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
+  	}    
   });
 });
 
