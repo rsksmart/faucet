@@ -121,6 +121,9 @@ function accountAlreadyUsed(account) {
 
 app.get('/balance', function (req, res) {
   var balance = web3.eth.getBalance(faucetAddress);
+
+  balance = web3.fromWei(balance, "ether");
+  
   return res.status(200).send(balance);  
 });
 
