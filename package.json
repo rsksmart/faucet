@@ -13,7 +13,9 @@
     "body-parser": "latest",
     "web3": "^0.15.3",
     "request": "latest",
-    "cron": "latest"
+    "cron": "latest",
+    "captcha": "0.1.0",
+    "cookie-parser": "^1.4.3"
   },
   "devDependencies": {
     "simpleunit": "0.0.7"
