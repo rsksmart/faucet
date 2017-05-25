@@ -77,7 +77,6 @@ function readConfig(){
   rskNode = obj.rskNode;
   faucetAddress = obj.faucetAddress;
   faucetPrivateKey = obj.faucetPrivateKey;
-  reCaptchaSecret = obj.reCaptchaSecret;
   valueToSend = obj.valueToSend;
   gasPrice = obj.gasPrice;
   gas = obj.gas;
@@ -139,34 +138,16 @@ app.post('/', function (req, res) {
   }
 
 
-  // gRecaptchaResponse is the key that browser will generate upon form submit.
-  // if its blank or null means user has not selected the captcha, so return the error.
-  if(req.body.gRecaptchaResponse === undefined || req.body.gRecaptchaResponse === '' || req.body.gRecaptchaResponse === null) {
-    console.log('No req.body.gRecaptchaResponse');
-    return res.status(400).send("Please complete captcha.");
-  }
-  // req.connection.remoteAddress will provide IP address of connected user.
-  var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + reCaptchaSecret + "&response=" + req.body.gRecaptchaResponse + "&remoteip=" + req.connection.remoteAddress;
-  // Hitting GET request to the URL, Google will respond with success or error scenario.
-  request(verificationUrl,function(error,response,body) {
-  	var isSyncing = web3.eth.syncing;
-  	if(!isSyncing) {
-  		body = JSON.parse(body);
-	    // Success will be true or false depending upon captcha validation.
-	    if(body.success !== undefined && !body.success) {
-	      console.log('Invalid captcha ', req.body.gRecaptchaResponse);
-	      return res.status(400).send("Failed captcha verification.");
-	    }
-	    console.log('Sending RSKs to ' + req.body.rskAddress);
-	    console.log('Recaptcha ' + req.body.gRecaptchaResponse);
-	    executeTransfer(req.body.rskAddress)
+  var isSyncing = web3.eth.syncing;
+  if(!isSyncing) {
+    console.log('Sending RSKs to ' + req.body.rskAddress);
+    executeTransfer(req.body.rskAddress)
 
-	    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
-	    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
-  	} else {
-  		res.send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
-  	}    
-  });
+    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
+    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
+  } else {
+    res.send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
+  }
 });
 
 app.listen(port, function () {
