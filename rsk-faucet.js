@@ -5,6 +5,7 @@ var app = express();
 var fs = require('fs');
 var Web3 = require('web3');
 var CronJob = require('cron').CronJob;
+const cookieParser = require('cookie-parser')
 
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
@@ -16,10 +17,16 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
-}));
+app.use( bodyParser.json() );                           // to support JSON-encoded bodies
+app.use( bodyParser.urlencoded({ extended: true }) );   // to support URL-encoded bodies
+
+const captchaUrl = '/captcha.jpg'
+const captchaId = 'captcha'
+const captchaFieldName = 'captcha' 
+
+app.use(cookieParser())
+const captcha = require('captcha').create({ cookie: captchaId })
+app.get(captchaUrl, captcha.image())
 
 var port;
 var rskNode;
@@ -39,10 +46,12 @@ var job = new CronJob({
   cronTime: '* */59 * * * *',
   onTick: function() {
     for (var storeAddress in faucetHistory) {
-      var now = new Date().getTime();
-      //86400000 = 1 day
-      if(now - faucetHistory[storeAddress].timestamp >= 86400000) {
-        delete faucetHistory[storeAddress];   
+      if ( faucetHistory.hasOwnProperty(storeAddress) ) {
+        var now = new Date().getTime();
+        //86400000 = 1 day
+        if(now - faucetHistory[storeAddress].timestamp >= 86400000) {
+          delete faucetHistory[storeAddress];
+        }
       }
     }
   }, start: false, timeZone: 'America/Los_Angeles'});
@@ -65,14 +74,14 @@ getWeb3();
 extendWeb3();
 
 function executeTransfer(destinationAddress) {
-  
+
   loadPk();
   var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress.toLowerCase(), gasPrice: gasPrice, gas: gas, value: valueToSend});
   console.log('transaction hash', result);
 }
 
 function readConfig(){
-  obj=JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+  const obj=JSON.parse(fs.readFileSync('./config.json', 'utf8'));
   port = obj.port;
   rskNode = obj.rskNode;
   faucetAddress = obj.faucetAddress;
@@ -139,34 +148,30 @@ app.post('/', function (req, res) {
   }
 
 
-  // gRecaptchaResponse is the key that browser will generate upon form submit.
-  // if its blank or null means user has not selected the captcha, so return the error.
-  if(req.body.gRecaptchaResponse === undefined || req.body.gRecaptchaResponse === '' || req.body.gRecaptchaResponse === null) {
-    console.log('No req.body.gRecaptchaResponse');
+  //
+  //
+  if(req.body[captchaFieldName] === undefined || req.body[captchaFieldName] === '' || req.body[captchaFieldName] === null) {
+    console.log('No req.body.' + captchaFieldName);
     return res.status(400).send("Please complete captcha.");
   }
-  // req.connection.remoteAddress will provide IP address of connected user.
-  var verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + reCaptchaSecret + "&response=" + req.body.gRecaptchaResponse + "&remoteip=" + req.connection.remoteAddress;
-  // Hitting GET request to the URL, Google will respond with success or error scenario.
-  request(verificationUrl,function(error,response,body) {
-  	var isSyncing = web3.eth.syncing;
-  	if(!isSyncing) {
-  		body = JSON.parse(body);
-	    // Success will be true or false depending upon captcha validation.
-	    if(body.success !== undefined && !body.success) {
-	      console.log('Invalid captcha ', req.body.gRecaptchaResponse);
-	      return res.status(400).send("Failed captcha verification.");
-	    }
-	    console.log('Sending RSKs to ' + req.body.rskAddress);
-	    console.log('Recaptcha ' + req.body.gRecaptchaResponse);
-	    executeTransfer(req.body.rskAddress)
 
-	    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
-	    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
-  	} else {
-  		res.send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
-  	}    
-  });
+  var isSyncing = web3.eth.syncing;
+  if(!isSyncing) {
+    // Success will be true or false depending upon captcha validation.
+    var valid = captcha.check(req.body[captchaFieldName], req.cookies[captchaId])
+    if(valid !== undefined && !valid) {
+      console.log('Invalid captcha ', req.body[captchaFieldName]);
+      return res.status(400).send("Failed captcha verification.");
+    }
+    console.log('Sending RSKs to ' + req.body.rskAddress);
+    console.log('Captcha ' + req.body[captchaFieldName]);
+    executeTransfer(req.body.rskAddress)
+
+    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
+    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
+  } else {
+    res.send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
+  }
 });
 
 app.listen(port, function () {
