@@ -1,11 +1,27 @@
 var express = require('express');
+var session = require('express-session');
+var fileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
 var request = require('request');
 var app = express();
+
 var fs = require('fs');
 var Web3 = require('web3');
 var CronJob = require('cron').CronJob;
 const cookieParser = require('cookie-parser')
+
+
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: 'kjnbmcvkjhaeroi',
+  proxy: true,
+  key: 'session.sid',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true },
+  store: new fileStore()
+}))
+
 
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));

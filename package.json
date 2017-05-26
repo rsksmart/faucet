@@ -10,12 +10,14 @@
   "license": "MIT",
   "dependencies": {
     "express": "latest",
+    "express-session": "latest",
     "body-parser": "latest",
     "web3": "^0.15.3",
     "request": "latest",
     "cron": "latest",
     "captcha": "0.1.0",
-    "cookie-parser": "^1.4.3"
+    "cookie-parser": "^1.4.3",
+    "session-file-store": "1.0.0"
   },
   "devDependencies": {
     "simpleunit": "0.0.7"
