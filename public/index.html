@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -44,14 +43,27 @@
                         <div id="faucetBalance"></div>
                         <div id="toRskForm">
                             <h3> Enter your RSK address: </h3>
-                            <input id="rskAddress" size="60" placeholder="Eg. 0xbd2a3d9f938e13cd947ec05cde7fe734df8dd831">
+                            <input id="rskAddress" style="height: 35px;" size="55" placeholder="Eg. 0xbd2a3d9f938e13cd947ec05cde7fe734df8dd831">
                             <br/><br/>
                             <center>
-                                <img src="/captcha.jpg">
-                                <input type="text" id="captchaInputText">
+                                <div id="captchaImgDiv" style="height: 105px;">
+                                    <img src="/captcha.jpg" id="captchaImg">
+                                </div>
+                                <div style="height:  35px;
+                                             width: 168px;">
+                                    <div style="float: left">
+                                        <input type="text" id="captchaInputText" style=" height:  35px;
+                                                                                          width: 122px;">
+                                    </div>
+                                    <div style="float: right;">
+                                        <a id="btnRefresh" href="#" class="btn btn-default btn-md">
+                                            <span class="glyphicon glyphicon-refresh"></span>
+                                        </a>
+                                    </div>
+                                </div>
                             </center>
                             <br/>
-                            <button id="toRskBtn" type='button'>Get RSKs!</button>
+                            <button id="toRskBtn" type="button" class="btn btn-success btn-lg">Get Smart-BTCs!</button>
                         </div>
 						<div id="toRskResult"></div>
 					</div>

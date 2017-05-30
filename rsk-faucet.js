@@ -26,6 +26,7 @@ app.use(session({
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
 app.use('/lib', express.static('lib'));
+app.use('/fonts', express.static('fonts'));
 app.use(express.static('public'));
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -41,9 +42,10 @@ const captchaId = 'captcha'
 const captchaFieldName = 'captcha' 
 
 app.use(cookieParser())
-const captcha = require('captcha').create({ cookie: captchaId })
-app.get(captchaUrl, captcha.image())
-
+const captcha = require('captcha').create({ cookie: captchaId, codeLength: 6,
+                                            color: 'rgb(0,100,100)', background: 'rgb(255,200,150)',
+                                            lineWidth: 2,      fontSize: 55,
+                                            canvasWidth: 170,  canvasHeight: 100 })
 var port;
 var rskNode;
 var faucetAddress;
@@ -90,7 +92,6 @@ getWeb3();
 extendWeb3();
 
 function executeTransfer(destinationAddress) {
-
   loadPk();
   var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress.toLowerCase(), gasPrice: gasPrice, gas: gas, value: valueToSend});
   console.log('transaction hash', result);
@@ -143,6 +144,8 @@ function accountAlreadyUsed(account) {
     var acc = account.toLowerCase(); 
     return acc in faucetHistory;
 }
+
+app.get(captchaUrl, captcha.image());
 
 app.get('/balance', function (req, res) {
   var balance = web3.eth.getBalance(faucetAddress);
