@@ -37,11 +37,10 @@ const captcha = require('captcha').create({ cookie: captchaId, codeLength: 6,
 var port;
 var rskNode;
 var faucetAddress;
-var reCaptchaSecret;
 var valueToSend;
 var gasPrice;
 var gas;
-var secret;
+var captchaSecret;
 var faucetPrivateKey;
 var faucetHistory = {};
 
@@ -51,7 +50,7 @@ readConfig();
 
 app.set('trust proxy', 1) // trust first proxy
 app.use(session({
-  secret: secret,
+  secret: captchaSecret,
   proxy: true,
   key: 'session.sid',
   resave: false,
@@ -103,9 +102,8 @@ function readConfig(){
   rskNode = obj.rskNode;
   faucetAddress = obj.faucetAddress;
   faucetPrivateKey = obj.faucetPrivateKey;
-  reCaptchaSecret = obj.reCaptchaSecret;
   valueToSend = obj.valueToSend;
-  secret = obj.secret;
+  captchaSecret = obj.captchaSecret;
   gasPrice = obj.gasPrice;
   gas = obj.gas;
 }
