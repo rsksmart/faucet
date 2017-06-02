@@ -11,18 +11,6 @@ var CronJob = require('cron').CronJob;
 const cookieParser = require('cookie-parser')
 
 
-app.set('trust proxy', 1) // trust first proxy
-app.use(session({
-  secret: 'kjnbmcvkjhaeroi',
-  proxy: true,
-  key: 'session.sid',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: true },
-  store: new fileStore()
-}))
-
-
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
 app.use('/lib', express.static('lib'));
@@ -53,12 +41,24 @@ var reCaptchaSecret;
 var valueToSend;
 var gasPrice;
 var gas;
+var secret;
 var faucetPrivateKey;
 var faucetHistory = {};
 
 eval(fs.readFileSync('lib/validate-rsk-address.js')+'');
 
 readConfig();
+
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: secret,
+  proxy: true,
+  key: 'session.sid',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true },
+  store: new fileStore()
+}))
 
 var job = new CronJob({
   cronTime: '* */59 * * * *',
@@ -105,6 +105,7 @@ function readConfig(){
   faucetPrivateKey = obj.faucetPrivateKey;
   reCaptchaSecret = obj.reCaptchaSecret;
   valueToSend = obj.valueToSend;
+  secret = obj.secret;
   gasPrice = obj.gasPrice;
   gas = obj.gas;
 }
