@@ -176,7 +176,7 @@ app.post('/', function (req, res) {
   var isSyncing = web3.eth.syncing;
   if(!isSyncing) {
     // Success will be true or false depending upon captcha validation.
-    var valid = captcha.check(req.body[captchaFieldName], req.cookies[captchaId])
+    var valid = captcha.check(req, req.body[captchaFieldName])
     if(valid !== undefined && !valid) {
       console.log('Invalid captcha ', req.body[captchaFieldName]);
       return res.status(400).send("Failed captcha verification.");
@@ -188,7 +188,7 @@ app.post('/', function (req, res) {
     faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
     res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
   } else {
-    res.send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
+    res.status(400).send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
   }
 });
 
