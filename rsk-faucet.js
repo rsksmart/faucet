@@ -1,4 +1,5 @@
 var express = require('express');
+var compression = require('compression');
 var session = require('express-session');
 var fileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
@@ -9,6 +10,20 @@ var fs = require('fs');
 var Web3 = require('web3');
 var CronJob = require('cron').CronJob;
 const cookieParser = require('cookie-parser')
+
+
+// compress all responses
+app.use(compression({filter: shouldCompress}))
+
+function shouldCompress (req, res) {
+  if (req.headers['x-no-compression']) {
+    // don't compress responses with this request header
+    return false
+  }
+
+  // fallback to standard filter function
+  return compression.filter(req, res)
+}
 
 
 app.use('/css', express.static('css'));
