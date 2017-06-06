@@ -31,6 +31,7 @@ app.use('/img', express.static('img'));
 app.use('/lib', express.static('lib'));
 app.use('/fonts', express.static('fonts'));
 app.use(express.static('public'));
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -158,6 +159,22 @@ function accountAlreadyUsed(account) {
     var acc = account.toLowerCase(); 
     return acc in faucetHistory;
 }
+
+app.get('/*', function (req, res, next) {
+
+  if (   req.url.indexOf("/img/") === 0
+      || req.url.indexOf("/lib/") === 0
+      || req.url.indexOf("/fonts/") === 0
+      || req.url.indexOf("/css/font-awesome/css/") === 0
+      || req.url.indexOf("/css/font-awesome/fonts/") === 0
+      || req.url.indexOf("/css/") === 0
+      ) {
+    res.setHeader("Cache-Control", "public, max-age=300000");
+    res.setHeader("Expires", new Date(Date.now() + 300000).toUTCString());
+  }
+  next();
+});
+
 
 app.get(captchaUrl, captcha.image());
 
