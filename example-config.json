@@ -3,8 +3,7 @@
 	"rskNode": "rskNodeAddress",
 	"faucetAddress": "rskAddressForFaucet",
 	"faucetPrivateKey": "rskAddressForFaucetPrivateKey",
-	"valueToSend": "valueToSend",
+	"valueToSend": "valueToSendinhex",
 	"captchaSecret": "someSecret",
-	"gas": "gas",
-	"gasPrice": "gasPrice"
+	"gas": "gasinhex"
 }

@@ -8,9 +8,9 @@ var app = express();
 
 var fs = require('fs');
 var Web3 = require('web3');
+var Tx = require('ethereumjs-tx');
 var CronJob = require('cron').CronJob;
 const cookieParser = require('cookie-parser')
-
 
 // compress all responses
 app.use(compression({filter: shouldCompress}))
@@ -24,7 +24,6 @@ function shouldCompress (req, res) {
   // fallback to standard filter function
   return compression.filter(req, res)
 }
-
 
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
@@ -90,7 +89,6 @@ var job = new CronJob({
   }, start: false, timeZone: 'America/Los_Angeles'});
 job.start();
 
-
 function getWeb3() {
   if (web3)
     return web3;
@@ -101,15 +99,17 @@ function getWeb3() {
 
   return web3;
 }
+
 var web3;
+
 getWeb3();
 
-extendWeb3();
-
 function executeTransfer(destinationAddress) {
-  loadPk();
-  var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress.toLowerCase(), gasPrice: gasPrice, gas: gas, value: valueToSend});
-  console.log('transaction hash', result);
+  var rawTx = buildTx(destinationAddress, getNonce(faucetAddress), getGasPrice());
+  var result = web3.eth.sendRawTransaction(rawTx.toString('hex'), function(err, hash){
+    if (!err)
+      console.log('transaction hash', hash);
+  });
 }
 
 function readConfig(){
@@ -120,39 +120,37 @@ function readConfig(){
   faucetPrivateKey = obj.faucetPrivateKey;
   valueToSend = obj.valueToSend;
   captchaSecret = obj.captchaSecret;
-  gasPrice = obj.gasPrice;
   gas = obj.gas;
 }
 
-function extendWeb3() {
-  web3._extend({
-    property: 'personal',
-    methods: [new web3._extend.Method({
-      name: 'importRawKey',
-      call: 'personal_importRawKey',
-      params: 2,
-      inputFormatter: [function (value) { return value; }, function (value) { return value; }],
-      outputFormatter: null
-    })]
-  });
-
-  web3._extend({
-    property: 'personal',
-    methods: [new web3._extend.Method({
-      name: 'unlockAccount',
-      call: 'personal_unlockAccount',
-      params: 3,
-      inputFormatter: [function (value) { return value; }, function (value) { return value; }, function (value) { return value; }],
-      outputFormatter: null
-    })]
-  });
+function buildTx(account, nonce, gasPrice) {
+  var rawTx = {
+    nonce: nonce,
+    gasPrice: gasPrice,
+    gas: gas,
+    value: valueToSend,
+    to: account
+  }
+    
+  var tx = new Tx(rawTx);
+  tx.sign(faucetPrivateKey);
+  var serializedTx = tx.serialize();
+  return serializedTx;
 }
 
-function loadPk() {
-  console.log('Loding PK to node');
-  var result = web3.personal.importRawKey(faucetPrivateKey, "passPhraseToEncryptPrivKey");
-  var result = web3.personal.unlockAccount(faucetAddress, "passPhraseToEncryptPrivKey", "0xE10");
-  console.log('PKs loaded to the node');
+function getNonce(){
+  var result = web3.eth.getTransactionCount(faucetAddress, "pending");
+  return result;
+}
+
+function getGasPrice(){
+  var block = web3.eth.getBlock("latest")
+  console.log(block.minimumGasPrice);
+  if (block.minimumGasPrice <= 21000) {
+    return 21000;
+  } else {
+    return block.minimumGasPrice;
+  }
 }
 
 function accountAlreadyUsed(account) {
@@ -175,7 +173,6 @@ app.get('/*', function (req, res, next) {
   next();
 });
 
-
 app.get(captchaUrl, captcha.image());
 
 app.get('/balance', function (req, res) {
@@ -197,9 +194,6 @@ app.post('/', function (req, res) {
     return res.status(400).send('Address already used today.');
   }
 
-
-  //
-  //
   if(req.body[captchaFieldName] === undefined || req.body[captchaFieldName] === '' || req.body[captchaFieldName] === null) {
     console.log('No req.body.' + captchaFieldName);
     return res.status(400).send("Please complete captcha.");
