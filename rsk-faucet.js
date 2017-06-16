@@ -117,7 +117,7 @@ function readConfig(){
   port = obj.port;
   rskNode = obj.rskNode;
   faucetAddress = obj.faucetAddress;
-  faucetPrivateKey = obj.faucetPrivateKey;
+  faucetPrivateKey = new Buffer(obj.faucetPrivateKey, 'hex');
   valueToSend = obj.valueToSend;
   captchaSecret = obj.captchaSecret;
   gas = obj.gas;
@@ -145,7 +145,6 @@ function getNonce(){
 
 function getGasPrice(){
   var block = web3.eth.getBlock("latest")
-  console.log(block.minimumGasPrice);
   if (block.minimumGasPrice <= 21000) {
     return 21000;
   } else {
