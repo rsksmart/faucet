@@ -145,8 +145,8 @@ function getNonce(){
 
 function getGasPrice(){
   var block = web3.eth.getBlock("latest")
-  if (block.minimumGasPrice <= 21000) {
-    return 21000;
+  if (block.minimumGasPrice <= 1) {
+    return 1;
   } else {
     return block.minimumGasPrice;
   }
