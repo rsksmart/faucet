@@ -1,16 +1,36 @@
 var express = require('express');
+var compression = require('compression');
+var session = require('express-session');
+var fileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
 var request = require('request');
 var app = express();
+
 var fs = require('fs');
 var Web3 = require('web3');
+var Tx = require('ethereumjs-tx');
 var CronJob = require('cron').CronJob;
 const cookieParser = require('cookie-parser')
+
+// compress all responses
+app.use(compression({filter: shouldCompress}))
+
+function shouldCompress (req, res) {
+  if (req.headers['x-no-compression']) {
+    // don't compress responses with this request header
+    return false
+  }
+
+  // fallback to standard filter function
+  return compression.filter(req, res)
+}
 
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
 app.use('/lib', express.static('lib'));
+app.use('/fonts', express.static('fonts'));
 app.use(express.static('public'));
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -25,22 +45,34 @@ const captchaId = 'captcha'
 const captchaFieldName = 'captcha' 
 
 app.use(cookieParser())
-const captcha = require('captcha').create({ cookie: captchaId })
-app.get(captchaUrl, captcha.image())
-
+const captcha = require('captcha').create({ cookie: captchaId, codeLength: 6,
+                                            color: 'rgb(0,100,100)', background: 'rgb(255,200,150)',
+                                            lineWidth: 2,      fontSize: 55,
+                                            canvasWidth: 170,  canvasHeight: 100 })
 var port;
 var rskNode;
 var faucetAddress;
-var reCaptchaSecret;
 var valueToSend;
 var gasPrice;
 var gas;
+var captchaSecret;
 var faucetPrivateKey;
 var faucetHistory = {};
 
 eval(fs.readFileSync('lib/validate-rsk-address.js')+'');
 
 readConfig();
+
+app.set('trust proxy', 1) // trust first proxy
+app.use(session({
+  secret: captchaSecret,
+  proxy: true,
+  key: 'session.sid',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: true },
+  store: new fileStore()
+}))
 
 var job = new CronJob({
   cronTime: '* */59 * * * *',
@@ -57,7 +89,6 @@ var job = new CronJob({
   }, start: false, timeZone: 'America/Los_Angeles'});
 job.start();
 
-
 function getWeb3() {
   if (web3)
     return web3;
@@ -68,16 +99,17 @@ function getWeb3() {
 
   return web3;
 }
+
 var web3;
+
 getWeb3();
 
-extendWeb3();
-
 function executeTransfer(destinationAddress) {
-
-  loadPk();
-  var result = web3.eth.sendTransaction({from: faucetAddress, to: destinationAddress.toLowerCase(), gasPrice: gasPrice, gas: gas, value: valueToSend});
-  console.log('transaction hash', result);
+  var rawTx = buildTx(destinationAddress, getNonce(), getGasPrice());
+  var result = web3.eth.sendRawTransaction(rawTx.toString('hex'), function(err, hash){
+    if (!err)
+      console.log('transaction hash', hash);
+  });
 }
 
 function readConfig(){
@@ -85,48 +117,62 @@ function readConfig(){
   port = obj.port;
   rskNode = obj.rskNode;
   faucetAddress = obj.faucetAddress;
-  faucetPrivateKey = obj.faucetPrivateKey;
-  reCaptchaSecret = obj.reCaptchaSecret;
+  faucetPrivateKey = new Buffer(obj.faucetPrivateKey, 'hex');
   valueToSend = obj.valueToSend;
-  gasPrice = obj.gasPrice;
+  captchaSecret = obj.captchaSecret;
   gas = obj.gas;
 }
 
-function extendWeb3() {
-  web3._extend({
-    property: 'personal',
-    methods: [new web3._extend.Method({
-      name: 'importRawKey',
-      call: 'personal_importRawKey',
-      params: 2,
-      inputFormatter: [function (value) { return value; }, function (value) { return value; }],
-      outputFormatter: null
-    })]
-  });
-
-  web3._extend({
-    property: 'personal',
-    methods: [new web3._extend.Method({
-      name: 'unlockAccount',
-      call: 'personal_unlockAccount',
-      params: 3,
-      inputFormatter: [function (value) { return value; }, function (value) { return value; }, function (value) { return value; }],
-      outputFormatter: null
-    })]
-  });
+function buildTx(account, nonce, gasPrice) {
+  var rawTx = {
+    nonce: nonce,
+    gasPrice: gasPrice,
+    gas: gas,
+    value: valueToSend,
+    to: account
+  }
+    
+  var tx = new Tx(rawTx);
+  tx.sign(faucetPrivateKey);
+  var serializedTx = tx.serialize();
+  return serializedTx;
 }
 
-function loadPk() {
-  console.log('Loding PK to node');
-  var result = web3.personal.importRawKey(faucetPrivateKey, "passPhraseToEncryptPrivKey");
-  var result = web3.personal.unlockAccount(faucetAddress, "passPhraseToEncryptPrivKey", "0xE10");
-  console.log('PKs loaded to the node');
+function getNonce(){
+  var result = web3.eth.getTransactionCount(faucetAddress, "pending");
+  return result;
+}
+
+function getGasPrice(){
+  var block = web3.eth.getBlock("latest")
+  if (block.minimumGasPrice <= 1) {
+    return 1;
+  } else {
+    return block.minimumGasPrice;
+  }
 }
 
 function accountAlreadyUsed(account) {
     var acc = account.toLowerCase(); 
     return acc in faucetHistory;
 }
+
+app.get('/*', function (req, res, next) {
+
+  if (   req.url.indexOf("/img/") === 0
+      || req.url.indexOf("/lib/") === 0
+      || req.url.indexOf("/fonts/") === 0
+      || req.url.indexOf("/css/font-awesome/css/") === 0
+      || req.url.indexOf("/css/font-awesome/fonts/") === 0
+      || req.url.indexOf("/css/") === 0
+      ) {
+    res.setHeader("Cache-Control", "public, max-age=300000");
+    res.setHeader("Expires", new Date(Date.now() + 300000).toUTCString());
+  }
+  next();
+});
+
+app.get(captchaUrl, captcha.image());
 
 app.get('/balance', function (req, res) {
   var balance = web3.eth.getBalance(faucetAddress);
@@ -147,9 +193,6 @@ app.post('/', function (req, res) {
     return res.status(400).send('Address already used today.');
   }
 
-
-  //
-  //
   if(req.body[captchaFieldName] === undefined || req.body[captchaFieldName] === '' || req.body[captchaFieldName] === null) {
     console.log('No req.body.' + captchaFieldName);
     return res.status(400).send("Please complete captcha.");
@@ -158,7 +201,7 @@ app.post('/', function (req, res) {
   var isSyncing = web3.eth.syncing;
   if(!isSyncing) {
     // Success will be true or false depending upon captcha validation.
-    var valid = captcha.check(req.body[captchaFieldName], req.cookies[captchaId])
+    var valid = captcha.check(req, req.body[captchaFieldName])
     if(valid !== undefined && !valid) {
       console.log('Invalid captcha ', req.body[captchaFieldName]);
       return res.status(400).send("Failed captcha verification.");
@@ -170,7 +213,7 @@ app.post('/', function (req, res) {
     faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
     res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
   } else {
-    res.send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
+    res.status(400).send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
   }
 });
 

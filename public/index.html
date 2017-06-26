@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+
     
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -16,12 +16,34 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
 
-    <script src="lib/jquery-3.1.1.min.js"></script>
-    <script src="lib/validate-rsk-address.js"></script>
-    <script src="lib/rsk-helper.js"></script>
+    <script>
+        var resource = document.createElement('script');
+        resource.src = "lib/jquery-3.1.1.min.js";
+        var script = document.getElementsByTagName('script')[0];
+        script.parentNode.insertBefore(resource, script);
+    </script>
+
+    <script>
+        var resource = document.createElement('script');
+        resource.src = "lib/validate-rsk-address.js";
+        var script = document.getElementsByTagName('script')[1];
+        script.parentNode.insertBefore(resource, script);
+    </script>
+
+    <script>
+        var resource = document.createElement('script');
+        resource.src = "lib/rsk-helper.js";
+        var script = document.getElementsByTagName('script')[2];
+        script.parentNode.insertBefore(resource, script);
+    </script>
+
     <title>RSK Testnet Faucet</title>
     <link rel="icon" href="img/favicon.ico">
 </head>
+
+$.getScript(url, successCallback)
+
+
 
 <body id="page-top" class="index">
     <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
@@ -44,14 +66,27 @@
                         <div id="faucetBalance"></div>
                         <div id="toRskForm">
                             <h3> Enter your RSK address: </h3>
-                            <input id="rskAddress" size="60" placeholder="Eg. 0xbd2a3d9f938e13cd947ec05cde7fe734df8dd831">
+                            <input id="rskAddress" style="height: 35px;" size="55" placeholder="Eg. 0xbd2a3d9f938e13cd947ec05cde7fe734df8dd831">
                             <br/><br/>
                             <center>
-                                <img src="/captcha.jpg">
-                                <input type="text" id="captchaInputText">
+                                <div id="captchaImgDiv" style="height: 105px;">
+                                    <img src="/captcha.jpg" id="captchaImg">
+                                </div>
+                                <div style="height:  35px;
+                                             width: 168px;">
+                                    <div style="float: left">
+                                        <input type="text" id="captchaInputText" style=" height:  35px;
+                                                                                          width: 122px;">
+                                    </div>
+                                    <div style="float: right;">
+                                        <a id="btnRefresh" href="#" class="btn btn-default btn-md">
+                                            <span class="glyphicon glyphicon-refresh"></span>
+                                        </a>
+                                    </div>
+                                </div>
                             </center>
                             <br/>
-                            <button id="toRskBtn" type='button'>Get RSKs!</button>
+                            <button id="toRskBtn" type="button" class="btn btn-success btn-lg">Get Smart-BTCs!</button>
                         </div>
 						<div id="toRskResult"></div>
 					</div>
