@@ -105,7 +105,7 @@ var web3;
 getWeb3();
 
 function executeTransfer(destinationAddress) {
-  var rawTx = buildTx(destinationAddress, getNonce(faucetAddress), getGasPrice());
+  var rawTx = buildTx(destinationAddress, getNonce(), getGasPrice());
   var result = web3.eth.sendRawTransaction(rawTx.toString('hex'), function(err, hash){
     if (!err)
       console.log('transaction hash', hash);
