@@ -69,7 +69,7 @@ app.use(session({
   key: 'session.sid',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false },
+  cookie: { secure: true },
   store: new fileStore()
 }))
 
