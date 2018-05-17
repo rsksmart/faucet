@@ -13,9 +13,6 @@ var CronJob = require('cron').CronJob;
 var rskUtil = require('rskjs-util');
 const cookieParser = require('cookie-parser')
 
-// compress all responses
-app.use(compression({filter: shouldCompress}))
-
 function shouldCompress (req, res) {
   if (req.headers['x-no-compression']) {
     // don't compress responses with this request header
@@ -26,6 +23,8 @@ function shouldCompress (req, res) {
   return compression.filter(req, res)
 }
 
+// compress all responses
+app.use(compression({filter: shouldCompress}))
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
 app.use('/lib', express.static('lib'));
@@ -59,6 +58,17 @@ var gas;
 var captchaSecret;
 var faucetPrivateKey;
 var faucetHistory = {};
+
+function readConfig(){
+  const obj=JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+  port = obj.port;
+  rskNode = obj.rskNode;
+  faucetAddress = obj.faucetAddress;
+  faucetPrivateKey = new Buffer(obj.faucetPrivateKey, 'hex');
+  valueToSend = obj.valueToSend;
+  captchaSecret = obj.captchaSecret;
+  gas = obj.gas;
+}
 
 readConfig();
 
@@ -109,17 +119,6 @@ function executeTransfer(destinationAddress) {
     if (!err)
       console.log('transaction hash', hash);
   });
-}
-
-function readConfig(){
-  const obj=JSON.parse(fs.readFileSync('./config.json', 'utf8'));
-  port = obj.port;
-  rskNode = obj.rskNode;
-  faucetAddress = obj.faucetAddress;
-  faucetPrivateKey = new Buffer(obj.faucetPrivateKey, 'hex');
-  valueToSend = obj.valueToSend;
-  captchaSecret = obj.captchaSecret;
-  gas = obj.gas;
 }
 
 function buildTx(account, nonce, gasPrice) {
@@ -233,5 +232,4 @@ app.post('/', function (req, res) {
 
 app.listen(port, function () {
   console.log('RSK Faucet started on port ' + port);
-  app.get(captchaUrl, captcha.image());
 });
