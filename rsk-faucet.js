@@ -10,6 +10,7 @@ var fs = require('fs');
 var Web3 = require('web3');
 var Tx = require('ethereumjs-tx');
 var CronJob = require('cron').CronJob;
+var rskUtil = require('rskjs-util');
 const cookieParser = require('cookie-parser')
 
 // compress all responses
@@ -58,8 +59,6 @@ var gas;
 var captchaSecret;
 var faucetPrivateKey;
 var faucetHistory = {};
-
-eval(fs.readFileSync('lib/validate-rsk-address.js')+'');
 
 readConfig();
 
@@ -157,6 +156,21 @@ function accountAlreadyUsed(account) {
     return acc in faucetHistory;
 }
 
+function isValidRSKAddress(address, chainId) {
+  if (address === '0x0000000000000000000000000000000000000000') {
+    return false;
+  }
+  if (address.substring(0, 2) !== '0x') {
+    return false;
+  } else if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
+    return false;
+  } else if (/^(0x)?[0-9a-f]{40}$/.test(address) || /^(0x)?[0-9A-F]{40}$/.test(address)) {
+    return true;
+  } else {
+    return rskUtil.isValidChecksumAddress(address, chainId);
+  }
+}
+
 app.get('/*', function (req, res, next) {
 
   if (   req.url.indexOf("/img/") === 0
@@ -183,7 +197,7 @@ app.get('/balance', function (req, res) {
 });
 
 app.post('/', function (req, res) {
-  if (!validateRskAddress(req.body.rskAddress)) {
+  if (!isValidRSKAddress(req.body.rskAddress, 31)) {
     console.log('Invalid RSK address format ', req.body.rskAddress);
     return res.status(400).send('Invalid RSK address format.');
   }
@@ -219,4 +233,5 @@ app.post('/', function (req, res) {
 
 app.listen(port, function () {
   console.log('RSK Faucet started on port ' + port);
+  app.get(captchaUrl, captcha.image());
 });
