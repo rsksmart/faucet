@@ -19,7 +19,7 @@
     "cookie-parser": "^1.4.3",
     "session-file-store": "1.0.0",
     "ethereumjs-tx": "latest",
-    "rskjs-util": "1.0.2"
+    "rskjs-util": "1.0.3"
   },
   "devDependencies": {
     "simpleunit": "0.0.7"
