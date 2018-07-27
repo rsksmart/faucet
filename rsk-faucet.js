@@ -114,7 +114,8 @@ var web3;
 getWeb3();
 
 function executeTransfer(destinationAddress) {
-  var rawTx = buildTx(destinationAddress, getNonce(), getGasPrice());
+  var gasPrice = estimateGasPrice();
+  var rawTx = buildTx(destinationAddress, getNonce(), gasPrice);
   var result = web3.eth.sendRawTransaction(rawTx.toString('hex'), function(err, hash){
     if (!err)
       console.log('transaction hash', hash);
@@ -141,12 +142,12 @@ function getNonce(){
   return result;
 }
 
-function getGasPrice(){
+function estimateGasPrice(){
   var block = web3.eth.getBlock("latest")
   if (block.minimumGasPrice <= 1) {
     return 1;
   } else {
-    return block.minimumGasPrice;
+    return block.minimumGasPrice * 1.0001;
   }
 }
 
