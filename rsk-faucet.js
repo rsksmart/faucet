@@ -147,7 +147,7 @@ function estimateGasPrice(){
   if (block.minimumGasPrice <= 1) {
     return 1;
   } else {
-    return block.minimumGasPrice * 1.0001;
+    return block.minimumGasPrice * 1.01;
   }
 }
 
