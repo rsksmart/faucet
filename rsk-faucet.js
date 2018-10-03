@@ -225,7 +225,7 @@ app.post('/', function (req, res) {
     executeTransfer(req.body.rskAddress)
 
     faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
-    res.send('Successfully sent some SBTCs to ' + req.body.rskAddress + '.');
+    res.send('Successfully sent some RBTCs to ' + req.body.rskAddress + '.');
   } else {
     res.status(400).send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
   }

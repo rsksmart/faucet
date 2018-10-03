@@ -12,7 +12,7 @@
 - Copy example-config.json to config.json and configure with your data.
 - rsk-Faucet.js configuration variables on top of file
 - lib/rsk-helper.js configure urlOfFaucetServer
-- put some SBTCs on the faucet address
+- put some RBTCs on the faucet address
 
 
 ## TODO
