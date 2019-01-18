@@ -1,108 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web:400,600" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
 
-    <!-- Custom Fonts -->
-    <link href="css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-   
-    <script src="lib/jquery-3.1.1.min.js" type="text/javascript"></script>
-    <script src="lib/rsk-helper.js" type="text/javascript"></script>
-    <title>RSK Testnet Faucet</title>
+    <title>rsk testnet faucet</title>
     <link rel="icon" href="img/favicon.ico">
-</head>
-
+  </head>
 $.getScript(url, successCallback)
+  <body>
+    <div id="root">
+      <div class="app">
+        <header class="app-header">
+          <div class="header-logo">
+            <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 393 393">
+              <path d="M196.26 40.09c-17.52 0-31.8 14.02-31.8 31.05 0 3.54.63 6.93 1.75 10.1l-57.98 32.18a32.08 32.08 0 0 0-23.67-10.38c-17.51 0-31.79 14.02-31.79 31.05 0 14.67 10.6 27.1 24.72 30.26L77.25 229c-13.94 3.3-24.35 15.64-24.35 30.18 0 17.03 14.3 31.05 31.8 31.05a32.1 32.1 0 0 0 23.13-9.8l58.25 32.9a29.94 29.94 0 0 0-1.25 8.53c0 17.03 14.3 31.05 31.8 31.05s31.8-14.02 31.8-31.04a30 30 0 0 0-1.16-8.29l58.55-32.5a32.07 32.07 0 0 0 22.62 9.3c17.51 0 31.79-14.03 31.79-31.05 0-14.65-10.59-27.08-24.7-30.26l.25-64.72c13.78-3.4 24.05-15.68 24.05-30.11 0-17.03-14.3-31.05-31.8-31.05a32.1 32.1 0 0 0-23.17 9.85L226.68 80.2a30.17 30.17 0 0 0 1.37-9.04c0-17.03-14.29-31.06-31.8-31.06zm0 14.39c9.43 0 16.97 7.34 16.97 16.66 0 9.33-7.54 16.67-16.97 16.67s-16.96-7.33-16.96-16.67c0-9.33 7.53-16.66 16.97-16.66zm22.92 38.11l58.33 32.91a30 30 0 0 0 .38 18.58L225 173.92c-6.08-11.15-15.09-19.42-20.79-23.93l-.42-48.7a32.05 32.05 0 0 0 15.37-8.7zm-45.02.8a32 32 0 0 0 14.8 7.97l.66 48.44c-5.7 4.47-14.88 12.8-21.06 24.16l-53.89-29.92a29.97 29.97 0 0 0 .62-17.96zm-89.6 24.03c9.43 0 16.97 7.35 16.97 16.67 0 9.33-7.56 16.67-16.97 16.67-9.42 0-16.96-7.34-16.96-16.67 0-9.33 7.54-16.67 16.96-16.67zm223.47.13c9.42 0 16.97 7.34 16.97 16.67 0 9.33-7.55 16.68-16.97 16.68-9.42 0-16.98-7.34-16.98-16.68 0-9.33 7.56-16.67 16.98-16.67zm-201.25 38.7l56.55 31.39a45.82 45.82 0 0 0-.29 19.33l-55.08 31.1a32.04 32.04 0 0 0-15.86-9.08l.24-64.78a32.08 32.08 0 0 0 14.44-7.97zm178.96.05a32.07 32.07 0 0 0 15.22 8.19l-.25 64.71a32.05 32.05 0 0 0-14.96 8.42L230.55 207a45.97 45.97 0 0 0-.3-19.37zm-88.93 7.02c7.98 7.28 20.57 21.24 19.66 36.44-.6 10.24-6.14 18.96-11.96 25.4v-22.98c0-4-3.34-7.24-7.46-7.24h-.12a7.36 7.36 0 0 0-7.36 7.24v.11-.02 23.43c-5.99-6.51-11.82-15.42-12.45-25.94-.9-15.2 11.68-29.17 19.67-36.44zm28.93 57.57l52.4 29.06a29.97 29.97 0 0 0 .03 18.8l-58.05 32.21a32.06 32.06 0 0 0-15.83-9.25l-.16-44.55c.19-.54.32-1.17.37-1.8v-.02c6.19-4.64 15.34-12.86 21.25-24.45zm-57.88 0c5.97 11.7 15.23 19.98 21.42 24.58l.17 46.14a32.07 32.07 0 0 0-16.1 9.17l-58.15-32.83a30.04 30.04 0 0 0 .05-17.36zM84.7 242.5c9.43 0 16.97 7.36 16.97 16.69 0 9.33-7.54 16.67-16.97 16.67-9.42 0-16.96-7.33-16.96-16.67 0-9.33 7.54-16.68 16.97-16.68zm223.74.15c9.43 0 16.97 7.35 16.97 16.67 0 9.33-7.56 16.67-16.97 16.67-9.42 0-16.96-7.33-16.96-16.67 0-9.33 7.54-16.67 16.96-16.67zm-111.8 62.55c9.42 0 16.97 7.34 16.97 16.67 0 9.32-7.55 16.66-16.97 16.66-9.43 0-16.97-7.33-16.97-16.66 0-2.7.64-5.21 1.77-7.44l1.3-2.19a16.95 16.95 0 0 1 13.9-7.04z" opacity=".99"/>
+            </svg>
+          </div>
+          <div class="header-title">
+            <code class="title">rsk testnet faucet</code>
+          </div>
+          <div class="header-logo">
+            <svg class="menu" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <title>menu</title>
+              <path d="M3 6h18v2.016h-18v-2.016zM3 12.984v-1.969h18v1.969h-18zM3 18v-2.016h18v2.016h-18z"></path>
+            </svg>
+          </div>
+        </header>
 
-
-
-<body id="page-top" class="index">
-    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
-        <div class="container">
-            <div class="navbar-header">
-                <a href="/">
-                    <img src="img/RSKLOGOBN_daykpx.png" >
-                </a>
+        <main class="app-main">
+          <div class="faucet">
+            <div class="label-container">
+              <p>Faucet balance is <b id="balance">...</b> SBTC.</p>
             </div>
-        </div>
-    </nav>
-
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div>
-						<h1> RSK Testnet Faucet</h1>
-                        <div id="faucetBalance"></div>
-                        <div id="toRskForm">
-                            <h3> Enter your RSK address: </h3>
-                            <input id="rskAddress" style="height: 35px;" size="55" placeholder="Eg. 0xbd2a3d9f938e13cd947ec05cde7fe734df8dd831">
-                            <br/><br/>
-                            <center>
-                                <div id="captchaImgDiv" style="height: 105px;display: none;">
-                                    <img src="#" id="captchaImg">
-                                </div>
-                                <div style="height:  35px;
-                                             width: 168px;">
-                                    <div style="float: left">
-                                        <input type="text" id="captchaInputText" style=" height:  35px;
-                                                                                          width: 122px;">
-                                    </div>
-                                    <div style="float: right;">
-                                        <a id="btnRefresh" href="#" class="btn btn-default btn-md">
-                                            <span class="glyphicon glyphicon-refresh"></span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </center>
-                            <br/>
-                            <button id="toRskBtn" type="button" class="btn btn-success btn-lg">Get Smart-BTCs!</button>
-                        </div>
-						<div id="toRskResult"></div>
-					</div>
+            <div class="input-container">
+              <input id="address" class="input" placeholder="0xBa56870a3bc9...">
+            </div>
+            <div class="captcha">
+              <div class="captcha-container">
+                <img src="#" id="captcha-image" />
+              </div>
+              <div class="captcha-input-container">
+                <input type="text" id="captcha" class="input-mini" />
+                <div id="btnRefresh" class="reload-captcha-container">
+                  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <title>reload</title>
+                    <path d="M13.5 18c3.311 0 6-2.689 6-6s-2.689-6-6-6-6 2.69-6 6v3l3.015 0.017-4.515 4.509-4.5-4.509h3v-3.017c0-4.969 4.031-9 9-9s9 4.031 9 9-4.031 9-9 9v-3z" fill="#1aad8d"></path>
+                  </svg>
                 </div>
+              </div>
             </div>
-        </div>
-    </header>
-
-    <footer class="text-center">
-        <div class="footer-above">
-            <div class="container">
-                <div class="row">
-                    <div >
-                        <ul class="list-inline">
-                            <li><a href="https://www.facebook.com/RSKsmart" class="btn-social btn-outline"><i class="fa fa-fw fa-facebook"></i></a></li>
-                            <li><a href="https://plus.google.com/106858805051276533565" class="btn-social btn-outline"><i class="fa fa-fw fa-google-plus"></i></a></li>
-                            <li><a href="https://twitter.com/RSKsmart" class="btn-social btn-outline"><i class="fa fa-fw fa-twitter"></i></a></li>
-                            <li><a href="https://www.linkedin.com/company/rsk-labs" class="btn-social btn-outline"><i class="fa fa-fw fa-linkedin"></i></a></li>
-                            <li><a href="http://www.rsk.co" class="btn-social btn-outline"><i class="fa fa-fw fa-rss"></i></a></li>
-                            <li><a href="https://github.com/rsksmart" class="btn-social btn-outline"><i class="fa fa-fw fa-github"></i></a></li>
-                            <li><a href="https://www.instagram.com/rsksmart/" class="btn-social btn-outline"><i class="fa fa-fw fa-instagram"></i></a></li>
-                        </ul>
-                    </div>
-                </div>
+            <div className="btn-container">
+              <button id="toRskBtn" type="button" class="btn-default btn-highlight">Get RBTCs!</button>
             </div>
-        </div>
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+            <div id="result"></div>
+          </div>
+        </main>
 
-            ga('create', 'UA-85399009-3', 'auto');
-            ga('send', 'pageview');
-        </script>
-    </footer>
-</body>
+        <footer class="app-footer">
+          <a target="_blank" href="https://github.com/rsksmart/faucet" rel="noopener noreferrer">
+            <svg class="github" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <title>github</title>
+              <path d="M12 0.296c-6.627 0-12 5.372-12 12 0 5.302 3.438 9.8 8.206 11.387 0.6 0.111 0.82-0.26 0.82-0.577 0-0.286-0.011-1.231-0.016-2.234-3.339 0.726-4.043-1.416-4.043-1.416-0.546-1.387-1.332-1.756-1.332-1.756-1.089-0.745 0.082-0.729 0.082-0.729 1.205 0.085 1.839 1.237 1.839 1.237 1.070 1.834 2.807 1.304 3.492 0.997 0.108-0.775 0.418-1.305 0.762-1.605-2.666-0.303-5.467-1.332-5.467-5.93 0-1.31 0.469-2.381 1.237-3.221-0.125-0.302-0.536-1.523 0.116-3.176 0 0 1.008-0.322 3.301 1.23 0.957-0.266 1.984-0.399 3.004-0.404 1.020 0.005 2.047 0.138 3.006 0.404 2.291-1.553 3.297-1.23 3.297-1.23 0.653 1.653 0.243 2.873 0.118 3.176 0.769 0.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921 0.43 0.372 0.814 1.103 0.814 2.222 0 1.606-0.014 2.898-0.014 3.293 0 0.319 0.216 0.694 0.824 0.576 4.765-1.588 8.199-6.085 8.199-11.385 0-6.628-5.373-12-12-12z"></path>
+            </svg>
+          </a>
+          <p>Copyright © 2015-2018 RSK Labs. All rights reserved.</p>
+        </footer>
+      </div>
+    </div>
+
+    <script src="lib/jquery-3.1.1.min.js" type="text/javascript"></script>
+    <script src="lib/index.js" type="text/javascript"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-85399009-3', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </body>
 </html>
