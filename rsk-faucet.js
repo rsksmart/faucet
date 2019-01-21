@@ -104,7 +104,7 @@ function getWeb3() {
 
   console.log('using web3', rskNode);
   web3 = new Web3();
-  web3.setProvider(new web3.providers.HttpProvider('http://' + rskNode));
+  web3.setProvider(new web3.providers.HttpProvider(rskNode));
 
   return web3;
 }

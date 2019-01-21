@@ -135,6 +135,10 @@ p, label {
   box-sizing: content-box;
 }
 
+p{
+  font-size: 1.5em;
+}
+
 .input::placeholder {
   color: #568475;
 }
