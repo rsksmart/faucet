@@ -1,62 +1,59 @@
 ## How to build and run locally
-
 - Install NPM
-- Run: `$ npm install`   
+- Run:
+    ```sh
+    npm install
+    ```
     If you get an error installing canvas package, refer to the section bellow 'Installing dependencies'.
-    
-- node rsk-faucet.js
-- Open index.html in a browser
-
+- node `rsk-faucet.js`
+- Open `index.html` in a browser
 
 ## Configuration for deployment to prod/testnet
-- Copy example-config.json to config.json and configure with your data.
-- rsk-Faucet.js configuration variables on top of file
-- lib/rsk-helper.js configure urlOfFaucetServer
-- put some RBTCs on the faucet address
-
-
-## TODO
-- Error msg show in red
-- Success msg: include amount and address
-
-
+- Copy `example-config.json` to `config.json` and configure with your data.
+- `rsk-faucet.js` configuration variables on top of file.
+- `lib/index.js` configure `urlOfFaucetServer`.
+- Put some RBTCs on the faucet address.
 
 ## INSTALLING DEPENDENCIES
-If `npm install canvas` fails on your system then you need to install these system-libraries and trying again.
-
+If `npm install canvas` fails on your system then you need to install these system-libraries and try again:
 
 #### On ubuntu
+At your shell execute these commands:
+```sh
+sudo apt-get install libgif-dev
+```
 
-    At your shell execute these commands:
-        > sudo apt-get install libgif-dev
- 
-    if that isn't enough for you then:
-        > sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
-
+if that isn't enough for you then:
+```sh
+sudo apt-get install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+```
 
 #### On MAC OSX
+At your shell execute these commands:
+```sh
+npm install node-gyp -g
+brew install giflib cairo libjpeg giflib pixman
+npm install canvas
+```
 
-    At your shell execute these commands:
-        > npm install node-gyp -g
-        > brew install giflib cairo libjpeg giflib pixman
-        > npm install canvas
-
-    if that isn't enough for you then:
-        > xcode-select --install      # I thought this was dumb, but was key to one of my issues 
-        > npm install node-gyp -g
-        > brew install giflib cairo libjpeg giflib pixman
-        > export PKG_CONFIG_PATH=/opt/X11/lib/pkgconfig
-        > OTHER_CFLAGS=-I/usr/local/include npm install canvas
-
+If that isn't enough for you then:
+```sh
+xcode-select --install      # I thought this was dumb, but was key to one of my issues
+npm install node-gyp -g
+brew install giflib cairo libjpeg giflib pixman
+export PKG_CONFIG_PATH=/opt/X11/lib/pkgconfig
+OTHER_CFLAGS=-I/usr/local/include npm install canvas
+```
 
 #### On RedHat
-
-    At your shell execute these commands:
-        > sudo yum install cairo cairo-devel cairomm-devel libjpeg-turbo-devel pango pango-devel pangomm pangomm-devel giflib-devel -y
+At your shell execute these commands:
+```sh
+sudo yum install cairo cairo-devel cairomm-devel libjpeg-turbo-devel pango pango-devel pangomm pangomm-devel giflib-devel -y
+```
 
 #### On Windows
-    
-**1. Installing node-gyp** 
+
+**1. Installing node-gyp**
 
 Follow the instructions [here](https://github.com/nodejs/node-gyp#on-windows).
 
@@ -68,16 +65,16 @@ Notes:
 - Both GTK and Node.js need either be 64bit or 32bit to compile successfully.
 - Download GTK 2, **not GTK 3**, which is missing the required libpng. If you get linker errors you've most likely picked the wrong bundle.
 - If you use a different location than `C:\GTK`, add a `GTK_Root` argument to `npm install` or `node-gyp rebuild`. For example: `node-gyp rebuild --GTK_Root=C:\somewhere\GTK`.
-	
+
 **3. Installing libjpeg-turbo (optional, for JPEG support; node-canvas 2.0 and later)**
 
 Download the latest [libjpeg-turbo SDK for Visual C++](http://sourceforge.net/projects/libjpeg-turbo/files/) (currently `libjpeg-turbo-1.5.1-vc.exe` or `libjpeg-turbo-1.5.1-vc64.exe`) and install to its default location (`C:\libjpeg-turbo` if 32bit or `C:\libjpeg-turbo64` if 64bit).
 
 Notes:
-	
+
 - Both libjpeg-turbo and Node.js need either be 64bit or 32bit to compile successfully.
 - If you use a different location, add a `jpeg_root` argument to `npm install` or `node-gyp rebuild`. For example: `node-gyp rebuild --jpeg_root=C:\somewhere\libjpeg-turbo`.
-	
+
 **4. Installing node-canvas**
 
 After all dependencies are setup, `npm install canvas` or `yarn add canvas`.
