@@ -13,6 +13,8 @@ var CronJob = require('cron').CronJob;
 var rskUtil = require('rskjs-util');
 const cookieParser = require('cookie-parser')
 
+const namehash = require('eth-ens-namehash').hash;
+
 function shouldCompress (req, res) {
   if (req.headers['x-no-compression']) {
     // don't compress responses with this request header
@@ -192,13 +194,112 @@ app.get('/balance', function (req, res) {
   var balance = web3.eth.getBalance(faucetAddress);
 
   balance = web3.fromWei(balance, "ether");
-  
-  return res.status(200).send(balance);  
+
+  return res.status(200).send(balance);
 });
 
+const isRNS = name => {
+  const labels = name.split('.');
+
+  return labels[labels.length - 1] === 'rsk';
+}
+
+// rns auction testnet variant
+// read more: https://docs.rns.rifos.org/RNS-Testnet/
+const rns = web3.eth.contract([
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "node",
+        "type": "bytes32"
+      }
+    ],
+    "name": "resolver",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]).at('0xc1f9b554f9764a8b9db5d30d99c0a99ccf30b895')
+
 app.post('/', function (req, res) {
-  if (accountAlreadyUsed(req.body.rskAddress)) {
-    console.log('Address already used today:', req.body.rskAddress);
+  const reqValue = req.body.rskAddress;
+
+
+  if (isRNS(reqValue)) {
+    const hash = namehash(reqValue);
+    rns.resolver(hash, (err, resolverAddress) => {
+      if (err) return res.status(400).send('RNS error.');
+
+      if (resolverAddress === '0x0000000000000000000000000000000000000000') return res.status(400).send('No address resolution found.');
+
+      const resolver = web3.eth.contract([
+        {
+          "constant": true,
+          "inputs": [
+          {
+              "name": "interfaceID",
+              "type": "bytes4"
+          }
+          ],
+          "name": "supportsInterface",
+          "outputs": [
+          {
+              "name": "",
+              "type": "bool"
+          }
+          ],
+          "payable": false,
+          "stateMutability": "pure",
+          "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+            {
+                "name": "node",
+                "type": "bytes32"
+            }
+            ],
+            "name": "addr",
+            "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+      ]).at(resolverAddress);
+
+      resolver.supportsInterface('0x3b3b57de', (err, result) => {
+        if (err || !result) return res.status(400).send('No address resolution found.');
+
+        resolver.addr(hash, (err, addr) => {
+          if (err) return res.status(400).send('RNS error.');
+
+          console.log(addr)
+
+          return executeDispense(req, res, addr.toLowerCase());
+        })
+      })
+    })
+  } else {
+    executeDispense(req, res, reqValue);
+  }
+});
+
+function executeDispense (req, res, address) {
+  if (accountAlreadyUsed(address)) {
+    console.log('Address already used today:', address);
     return res.status(400).send('Address already used today.');
   }
 
@@ -215,23 +316,23 @@ app.post('/', function (req, res) {
       console.log('Invalid captcha ', req.body[captchaFieldName]);
       return res.status(400).send("Failed captcha verification.");
     }
-    console.log('Sending RSKs to ' + req.body.rskAddress);
+    console.log('Sending RSKs to ' + address);
     console.log('Captcha ' + req.body[captchaFieldName]);
-    executeTransfer(req.body.rskAddress)
+    executeTransfer(address)
 
-    faucetHistory[req.body.rskAddress.toLowerCase()] = {timestamp: new Date().getTime()};
-    if (isValidRSKAddress(req.body.rskAddress, 31)) {
-      res.send('Successfully sent some RBTCs to ' + req.body.rskAddress + '.');
+    faucetHistory[address.toLowerCase()] = {timestamp: new Date().getTime()};
+    if (isValidRSKAddress(address, 31)) {
+      res.send('Successfully sent some RBTCs to ' + address + '.');
     } else {
-      console.log(rskUtil.toChecksumAddress(req.body.rskAddress.toLowerCase(), 31));
-      res.send('Successfully sent some RBTCs to ' + req.body.rskAddress + '. </br>' +
-        'Please consider using this address with RSK Testnet checksum: ' + rskUtil.toChecksumAddress(req.body.rskAddress.toLowerCase(), 31));
+      console.log(rskUtil.toChecksumAddress(address.toLowerCase(), 31));
+      res.send('Successfully sent some RBTCs to ' + address + '. </br>' +
+        'Please consider using this address with RSK Testnet checksum: ' + rskUtil.toChecksumAddress(address.toLowerCase(), 31));
     }
 
   } else {
-    res.status(400).send('We can not tranfer any amount right now. Try again later.' + req.body.rskAddress + '.');
+    res.status(400).send('We can not tranfer any amount right now. Try again later.' + address + '.');
   }
-});
+}
 
 app.listen(port, function () {
   console.log('RSK Faucet started on port ' + port);
