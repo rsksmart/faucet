@@ -204,7 +204,7 @@ const isRNS = name => {
   return labels[labels.length - 1] === 'rsk';
 }
 
-// rns auction testnet variant
+// rns fcfs testnet variant
 // read more: https://docs.rns.rifos.org/RNS-Testnet/
 const rns = web3.eth.contract([
   {
