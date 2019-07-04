@@ -47,10 +47,7 @@ const captchaId = 'captcha'
 const captchaFieldName = 'captcha' 
 
 app.use(cookieParser())
-const captcha = require('captcha').create({ cookie: captchaId, codeLength: 6,
-                                            color: 'rgb(0,100,100)', background: 'rgb(255,200,150)',
-                                            lineWidth: 2,      fontSize: 55,
-                                            canvasWidth: 170,  canvasHeight: 100 })
+const captcha = require('captcha').create({ cookie: captchaId })
 var port;
 var rskNode;
 var faucetAddress;
