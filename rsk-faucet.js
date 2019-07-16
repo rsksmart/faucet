@@ -223,7 +223,7 @@ const rns = web3.eth.contract([
     "stateMutability": "view",
     "type": "function"
   }
-]).at('0xc1f9b554f9764a8b9db5d30d99c0a99ccf30b895')
+]).at('0xeff983147ae97758c04f65ac7dee7c7cacf48ba2')
 
 app.post('/', function (req, res) {
   const reqValue = req.body.rskAddress;
