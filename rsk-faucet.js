@@ -226,8 +226,7 @@ const rns = web3.eth.contract([
 ]).at('0xeff983147ae97758c04f65ac7dee7c7cacf48ba2')
 
 app.post('/', function (req, res) {
-  const reqValue = req.body.rskAddress;
-
+  const reqValue = req.body.rskAddress.trim();
 
   if (isRNS(reqValue)) {
     const hash = namehash(reqValue);
