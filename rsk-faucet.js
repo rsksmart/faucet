@@ -226,71 +226,75 @@ const rns = web3.eth.contract([
 ]).at('0xeff983147ae97758c04f65ac7dee7c7cacf48ba2')
 
 app.post('/', function (req, res) {
-  const reqValue = req.body.rskAddress;
+  try {
+    const reqValue = req.body.rskAddress;
 
 
-  if (isRNS(reqValue)) {
-    const hash = namehash(reqValue);
-    rns.resolver(hash, (err, resolverAddress) => {
-      if (err) return res.status(400).send('RNS error.');
+    if (isRNS(reqValue)) {
+      const hash = namehash(reqValue);
+      rns.resolver(hash, (err, resolverAddress) => {
+        if (err) return res.status(400).send('RNS error.');
 
-      if (resolverAddress === '0x0000000000000000000000000000000000000000') return res.status(400).send('No address resolution found.');
+        if (resolverAddress === '0x0000000000000000000000000000000000000000') return res.status(400).send('No address resolution found.');
 
-      const resolver = web3.eth.contract([
-        {
-          "constant": true,
-          "inputs": [
+        const resolver = web3.eth.contract([
           {
-              "name": "interfaceID",
-              "type": "bytes4"
-          }
-          ],
-          "name": "supportsInterface",
-          "outputs": [
-          {
-              "name": "",
-              "type": "bool"
-          }
-          ],
-          "payable": false,
-          "stateMutability": "pure",
-          "type": "function"
-        },
-        {
             "constant": true,
             "inputs": [
             {
-                "name": "node",
-                "type": "bytes32"
+                "name": "interfaceID",
+                "type": "bytes4"
             }
             ],
-            "name": "addr",
+            "name": "supportsInterface",
             "outputs": [
             {
                 "name": "",
-                "type": "address"
+                "type": "bool"
             }
             ],
             "payable": false,
-            "stateMutability": "view",
+            "stateMutability": "pure",
             "type": "function"
-        }
-      ]).at(resolverAddress);
+          },
+          {
+              "constant": true,
+              "inputs": [
+              {
+                  "name": "node",
+                  "type": "bytes32"
+              }
+              ],
+              "name": "addr",
+              "outputs": [
+              {
+                  "name": "",
+                  "type": "address"
+              }
+              ],
+              "payable": false,
+              "stateMutability": "view",
+              "type": "function"
+          }
+        ]).at(resolverAddress);
 
-      resolver.supportsInterface('0x3b3b57de', (err, result) => {
-        if (err || !result) return res.status(400).send('No address resolution found.');
+        resolver.supportsInterface('0x3b3b57de', (err, result) => {
+          if (err || !result) return res.status(400).send('No address resolution found.');
 
-        resolver.addr(hash, (err, addr) => {
-          if (err) return res.status(400).send('RNS error.');
+          resolver.addr(hash, (err, addr) => {
+            if (err) return res.status(400).send('RNS error.');
 
-          console.log(addr)
+            console.log(addr)
 
-          return executeDispense(req, res, addr.toLowerCase());
+            return executeDispense(req, res, addr.toLowerCase());
+          })
         })
       })
-    })
-  } else {
-    executeDispense(req, res, reqValue);
+    } else {
+      executeDispense(req, res, reqValue);
+    }
+  } catch {
+    return res.status(400).send('An error occurred, try again later.');
   }
 });
 
